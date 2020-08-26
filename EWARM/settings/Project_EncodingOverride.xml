@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userOverrides>
+    <override>
+        <path>C:\stm32\stm32project\stm32f103c8_lwip\Drivers\USER\config.h</path>
+        <encoding>UTF-8</encoding>
+    </override>
+</userOverrides>
