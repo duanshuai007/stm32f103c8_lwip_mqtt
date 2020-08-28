@@ -13,11 +13,12 @@
 #include "enc28j60.h"
 #include "string.h"
 
+extern uint8_t *macaddr;
 
-extern uint8_t macaddr[6];
-
-static uint8_t net_data_buffer[256];
-static uint8_t net_data_send_buffer[128];
+#define RECV_BUFFER_SIZE        256
+static uint8_t net_data_buffer[RECV_BUFFER_SIZE];
+#define SEND_BUFFER_SIZE        256
+static uint8_t net_data_send_buffer[SEND_BUFFER_SIZE];
 
 /* Define those to better describe your network interface. */
 #define IFNAME0 'e'
@@ -107,7 +108,6 @@ low_level_output(struct netif *netif, struct pbuf *p)
   //struct ethernetif *ethernetif = netif->state;
   struct pbuf *q;
   uint16_t i = 0;
-//  uint16_t j;
   //initiate transfer();
 
 #if ETH_PAD_SIZE
@@ -119,20 +119,14 @@ low_level_output(struct netif *netif, struct pbuf *p)
        time. The size of the data in each pbuf is kept in the ->len
        variable. */
     //send data from(q->payload, q->len);
-    memcpy(&net_data_send_buffer[i], (uint8_t *)q->payload, q->len);
-    i = i + q->len;
+    if ((q->len <=  SEND_BUFFER_SIZE) && ((i + q->len) <= SEND_BUFFER_SIZE)) {
+      memcpy(&net_data_send_buffer[i], (uint8_t *)q->payload, q->len);
+      i = i + q->len;
+    }
   }
-////  for(j=0;j<18;j++){
-////    net_data_send_buffer[i+j] = 0;
-////  }
+
   enc28j60PacketSend(i, net_data_send_buffer);
 
-//  printf("net send[%d]:", i);
-//  for(j=0;j<i;j++) {
-//    printf("%02x ", net_data_send_buffer[j]);
-//  }
-//  printf("\r\n");
-  
   //signal that packet should be sent();
 
   MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);
@@ -172,7 +166,7 @@ low_level_input(struct netif *netif)
 
   /* Obtain the size of the packet and put it into the "len"
      variable. */
-  len = enc28j60PacketReceive(500, net_data_buffer);
+  len = enc28j60PacketReceive(RECV_BUFFER_SIZE, net_data_buffer);
   if (len == 0)
     return 0;
   

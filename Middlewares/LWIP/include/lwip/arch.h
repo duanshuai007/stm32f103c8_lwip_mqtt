@@ -391,6 +391,8 @@ u32_t lwip_fuzz_rand(void);
 #define LWIP_RAND() lwip_fuzz_rand()
 #endif
 
+//add by bigfish
+uint32_t lwip_rand(void);
 /**
  * @}
  */

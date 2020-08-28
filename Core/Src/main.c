@@ -38,7 +38,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 extern __IO uint32_t LocalTime;
-uint8_t macaddr[6];
+uint8_t flash_unique_id[8];
+uint8_t *macaddr = &flash_unique_id[2];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -78,8 +79,7 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint8_t i;
-  uint8_t flah_unique_id[8];
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -123,14 +123,13 @@ int main(void)
   LL_SPI_Enable(SPI1);
   LL_SPI_Enable(SPI2);
   
-  w25x16_ReadUniqueID(flah_unique_id);
+  w25x16_ReadUniqueID(flash_unique_id);
   
-  printf("macaddr:");
-  for (i=0;i<6;i++) {
-    macaddr[i] =  flah_unique_id[i+2];
-    printf("%02x ", macaddr[i]);
-  }
-  printf("\r\n");
+//  printf("\nmacaddr:");
+//  for (i=0;i<6;i++) {
+//    printf("%02x ", macaddr[i]);
+//  }
+//  printf("\r\n");
   
   LwIP_Init();
 

@@ -23,6 +23,8 @@ C:\stm32\stm32project\stm32f103c8_lwip\EWARM/../Middlewares/LWIP/include/netif
 -I
 C:\stm32\stm32project\stm32f103c8_lwip\EWARM/../Middlewares/LWIP
 -I
+C:\stm32\stm32project\stm32f103c8_lwip\EWARM\..\Middlewares\LWIP\mbedtls
+-I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\inc\c
@@ -44,6 +46,8 @@ C:\stm32\stm32project\stm32f103c8_lwip\Middlewares\LWIP\include\lwip
 C:\stm32\stm32project\stm32f103c8_lwip\Middlewares\LWIP\include\netif
 -I
 C:\stm32\stm32project\stm32f103c8_lwip\Middlewares\LWIP
+-I
+C:\stm32\stm32project\stm32f103c8_lwip\Middlewares\LWIP\mbedtls
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0

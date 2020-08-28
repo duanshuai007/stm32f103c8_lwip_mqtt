@@ -333,9 +333,6 @@ uint8_t enc28j60Init(uint8_t* macaddr)
   address[3] = enc28j60Read(MAADR2);
   address[4] = enc28j60Read(MAADR1);
   address[5] = enc28j60Read(MAADR0);
-//  printf("%02x %02x %02x %02x %02x %02x\r\n",
-//         address[0], address[1], address[2], address[3], address[4], address[5]);
-//  
   for (retry = 0; retry < 6; retry++) {
     if ( address[retry] != macaddr[5-retry])
       return 0;

@@ -33,7 +33,7 @@
         <EnableCache>1</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>555281459</Checksum>
+        <Checksum>3365466000</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -67,6 +67,9 @@
         <ITMportsLogFile>0</ITMportsLogFile>
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
+    <array_types>
+        <Fmt0>uint8_t[6]	4	0</Fmt0>
+    </array_types>
     <Trace1>
         <Enabled>0</Enabled>
         <ShowSource>1</ShowSource>
