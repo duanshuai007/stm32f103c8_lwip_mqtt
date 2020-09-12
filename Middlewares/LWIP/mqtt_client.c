@@ -8,14 +8,15 @@
 #include "my_config.h"
 #include "lwip/altcp_tls.h"
 
-#include "cert.h"
-
 extern uint8_t *macaddr;
 extern dev_ctrl device;
 
 static mqtt_client_t mqtt_client;
+static uint8_t mqtt_recv_buffer[64];
+//"/resp/c028e3525d2e"
+static char resp_topic[20];
 
-#if DNS_ENABLE
+#if LWIP_DNS
 extern ip_addr_t mqtt_server_ip;
 static void do_connect(mqtt_client_t *client, ip_addr_t *serverip);
 #else
@@ -29,8 +30,6 @@ static void do_connect(mqtt_client_t *client);
 //    printf("Publish result: %d\r\n", result);
 //  }
 //}
-
-char resp_topic[20];
 
 //static void __do_mqtt_publish(mqtt_client_t *client, char *payload)
 //{
@@ -87,20 +86,18 @@ static void do_analysis_data(char *data)
 
 static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
 {
-    u8_t *data_ptr = (u8_t *)data;
-//  printf("Incoming publish payload with length %d, flags %u\r\n", len, (unsigned int)flags);
+  //  printf("Incoming publish payload with length %d, flags %u\r\n", len, (unsigned int)flags);
   if(flags & MQTT_DATA_FLAG_LAST) {
     /* Last fragment of payload received (or whole part if payload fits receive buffer
     See MQTT_VAR_HEADER_BUFFER_LEN)  */  
-    
     /* Don't trust the publisher, check zero termination */
-    if(data_ptr[len] == 0) {
-//      printf("mqtt_incoming_data_cb:[%s]\r\n", (const char *)data);
-      if (strncmp((char *)data_ptr, "ctrl", 4) == 0) {
-          do_analysis_data((char *)(data_ptr + 4 + 1));
-      }
+//    if(data[len] == 0) {
+    memset(mqtt_recv_buffer, 0, sizeof(mqtt_recv_buffer));
+    memcpy(mqtt_recv_buffer, data, len);
+    printf("mqtt_incoming_data_cb:[%s]\r\n", (const char *)mqtt_recv_buffer);
+    if (strncmp((char *)mqtt_recv_buffer, "ctrl", 4) == 0) {
+      do_analysis_data((char *)(mqtt_recv_buffer + 4 + 1));
     }
-    memset((char *)data_ptr, 0, len);
   } else {
     /* Handle fragmented payload, store in buffer, write to file or whatever */
   }
@@ -125,17 +122,17 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
     
     /* Subscribe to a topic named "subtopic" with QoS level 1, call mqtt_sub_request_cb with result */
 //    err = mqtt_subscribe(client, "/stm32_topic", 1, mqtt_sub_request_cb, arg);
-    char topic[20];
-    snprintf(topic, 20, "/ctrl/%02x%02x%02x%02x%02x%02x",
+    char ctrltopic[20];
+    memset(ctrltopic, 0, sizeof(ctrltopic));
+    snprintf(ctrltopic, 20, "/ctrl/%02x%02x%02x%02x%02x%02x",
              macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
-    err = mqtt_subscribe(client, topic, 0, NULL, arg);
+    err = mqtt_subscribe(client, ctrltopic, 0, NULL, arg);
     if(err != ERR_OK) {
       printf("mqtt_subscribe return: %d\r\n", err);
     }
   } else {
-   
     /* Its more nice to be connected, so try to reconnect */
-#if DNS_ENABLE
+#if LWIP_DNS
     printf("mqtt_connection_cb: Disconnected, reason: %d ip:%s\r\n", status, ipaddr_ntoa((ip_addr_t *)arg));
     do_connect(client, (ip_addr_t *)arg);
 #else
@@ -146,7 +143,7 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
 }
 
 
-#if DNS_ENABLE
+#if LWIP_DNS
 static void do_connect(mqtt_client_t *client, ip_addr_t *serverip)
 #else
 static void do_connect(mqtt_client_t *client)
@@ -162,53 +159,51 @@ static void do_connect(mqtt_client_t *client)
   /* Setup an empty client info structure */
   memset(&ci, 0, sizeof(ci));
   
-//  snprintf(client_id, 13, "%02x%02x%02x%02x%02x%02x", 
-//           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
-//  snprintf(lastwill_topic, 21, "/status/%02x%02x%02x%02x%02x%02x",
-//           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
-  snprintf(resp_topic, 20, "/resp/%02x%02x%02x%02x%02x%02x",
-           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
-
-  memcpy(client_id, "random", 6);
-  memcpy(lastwill_topic, "/status/024251720577", strlen("/status/024251720577"));
+  memset(client_id, 0, sizeof(client_id));
+  memset(lastwill_topic, 0, sizeof(lastwill_topic));
+  memset(resp_topic, 0, sizeof(resp_topic));
   
+  snprintf(client_id, 13, "%02x%02x%02x%02x%02x%02x", 
+           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+  snprintf(lastwill_topic, 21, "/status/%02x%02x%02x%02x%02x%02x",
+           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+  snprintf(resp_topic, 19, "/resp/%02x%02x%02x%02x%02x%02x",
+           macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5]);
+  
+  printf("will topic:%s\r\n", lastwill_topic);
   ci.client_id = client_id;
   ci.will_topic = lastwill_topic;
-  uint16_t mqtt_server_port = MQTT_SERVER_PORT;
   
   /* Minimal amount of information required is client identifier, so set it here */
   ci.will_qos = 0;
   ci.will_retain = 1;
-  ci.will_msg = "32offline";
-  ci.keep_alive = 60;
-  ci.client_user = "test_001";
-  ci.client_pass = "NjBlNjY3ZWRlZ";
-  
+  ci.will_msg = MQTT_MSG_OFFLINE;
+  ci.keep_alive = MQTT_KEEPALIVE;
+  ci.client_user = MQTT_USER;
+  ci.client_pass = MQTT_PASSWORD;
+#if LWIP_ALTCP
   ci.tls_config = altcp_tls_create_config_client(certfile, sizeof(certfile));
-  
+#endif
   /* Initiate client and connect to server, if this fails immediately an error code is returned
   otherwise mqtt_connection_cb will be called with connection result after attempting
   to establish a connection with the server.
   For now MQTT version 3.1.1 is always used */
-#if  DNS_ENABLE
-  err = mqtt_client_connect(client, serverip, mqtt_server_port, mqtt_connection_cb, (void *)serverip, &ci);
+#if LWIP_DNS
+  err = mqtt_client_connect(client, serverip, MQTT_SERVER_PORT, mqtt_connection_cb, (void *)serverip, &ci);
 #else
   const ip_addr_t mqtt_server_ip = IPADDR4_INIT_BYTES(MQTT_SERVER_IP_0, MQTT_SERVER_IP_1, MQTT_SERVER_IP_2, MQTT_SERVER_IP_3);
-  err = mqtt_client_connect(client, &mqtt_server_ip, mqtt_server_port, mqtt_connection_cb, 0, &ci);
+  err = mqtt_client_connect(client, &mqtt_server_ip, MQTT_SERVER_PORT, mqtt_connection_cb, 0, &ci);
 #endif
     
   /* For now just print the result code if something goes wrong */
   if(err != ERR_OK) {
     printf("mqtt_connect return %d\r\n", err);
   } else {
-    mqtt_publish(client, ci.will_topic, "32online", 9, 0, 1, NULL, NULL);
-//    if(err != ERR_OK) {
-//      printf("online publish err: %d\r\n", err);
-//    }
+    mqtt_publish(client, ci.will_topic, MQTT_MSG_ONLINE, strlen(MQTT_MSG_ONLINE), 0, 1, NULL, NULL);
   }
 }
 
-#if DNS_ENABLE
+#if LWIP_DNS
 void mqtt_init(ip_addr_t *serverip) {
   do_connect(&mqtt_client, serverip);
 }

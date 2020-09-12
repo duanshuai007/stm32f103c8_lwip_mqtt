@@ -1207,9 +1207,6 @@
             <group>
                 <name>USER</name>
                 <file>
-                    <name>$PROJ_DIR$\..\Drivers\USER\cert.h</name>
-                </file>
-                <file>
                     <name>$PROJ_DIR$\..\Drivers\USER\device.h</name>
                 </file>
                 <file>
@@ -1372,6 +1369,9 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\aes.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\aesni.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls\altcp_tls_mbedtls.c</name>
                 </file>
                 <file>
@@ -1379,6 +1379,12 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\include\lwip\apps\altcp_tls_mbedtls_opts.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\arc4.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\aria.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\asn1parse.c</name>
@@ -1393,10 +1399,22 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\bignum.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\blowfish.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\camellia.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ccm.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\certs.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\chacha20.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\chachapoly.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\cipher.c</name>
@@ -1417,7 +1435,28 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ctr_drbg.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\debug.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\des.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\dhm.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ecdh.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ecdsa.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ecjpake.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ecp.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ecp_curves.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\entropy.c</name>
@@ -1429,7 +1468,25 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\error.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\gcm.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\havege.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\hkdf.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\hmac_drbg.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\md.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\md2.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\md4.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\md5.c</name>
@@ -1438,7 +1495,16 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\memory_buffer_alloc.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\net_sockets.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\nist_kw.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\oid.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\padlock.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pem.c</name>
@@ -1450,13 +1516,28 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pk_wrap.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pkcs11.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pkcs12.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pkcs5.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pkparse.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\pkwrite.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\platform.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\platform_util.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\poly1305.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\psa_crypto.c</name>
@@ -1495,6 +1576,9 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\psa_its_file.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ripemd160.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\rsa.c</name>
                 </file>
                 <file>
@@ -1505,6 +1589,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\sha256.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\sha512.c</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ssl_cache.c</name>
@@ -1531,6 +1618,18 @@
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\ssl_tls.c</name>
                 </file>
                 <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\threading.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\timing.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\version.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\version_features.c</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\x509.c</name>
                 </file>
                 <file>
@@ -1550,6 +1649,9 @@
                 </file>
                 <file>
                     <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\x509write_csr.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\Middlewares\LWIP\mbedtls_src\xtea.c</name>
                 </file>
             </group>
             <group>

@@ -15,9 +15,9 @@
 
 extern uint8_t *macaddr;
 
-#define RECV_BUFFER_SIZE        256
+#define RECV_BUFFER_SIZE        1024
 static uint8_t net_data_buffer[RECV_BUFFER_SIZE];
-#define SEND_BUFFER_SIZE        256
+#define SEND_BUFFER_SIZE        1024
 static uint8_t net_data_send_buffer[SEND_BUFFER_SIZE];
 
 /* Define those to better describe your network interface. */
@@ -127,6 +127,13 @@ low_level_output(struct netif *netif, struct pbuf *p)
 
   enc28j60PacketSend(i, net_data_send_buffer);
 
+//  uint16_t j;
+//  printf("enc28j60 recv:");
+//  for (j=0;j<i;j++) {
+//    printf("%02x ", net_data_send_buffer[j]);
+//  }
+//  printf("\r\n");
+  
   //signal that packet should be sent();
 
   MIB2_STATS_NETIF_ADD(netif, ifoutoctets, p->tot_len);

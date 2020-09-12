@@ -1,71 +1,6 @@
 #ifndef LWIP_HDR_LWIPOPTS_H
 #define LWIP_HDR_LWIPOPTS_H
 
-#define NO_SYS                        1
-#define LWIP_IPV4                       1
-#define LWIP_SOCKET                     0
-#define LWIP_NETCONN                    0
-//
-#define NO_SYS_NO_TIMERS                1
-//
-#define SYS_LIGHTWEIGHT_PROT            0
-//#define LWIP_DHCP     0
-//
-//#define MEM_LIBC_MALLOC                 0
-//#define MEM_OVERFLOW_CHECK              0
-//#define MEMP_OVERFLOW_CHECK             0
-//
-#define LWIP_RAW        1
-//#define PPP_SUPPORT     0
-//
-#define LWIP_TIMERS     1
-#define LWIP_DNS        1
-#define DNS_TABLE_SIZE  2
-#define DNS_MAX_NAME_LENGTH     32
-#define DNS_MAX_SERVERS 1
-#define LWIP_RAND       lwip_rand
-#define DNS_SERVER_ADDRESS(ipaddr) (ip4_addr_set_u32(ipaddr, ipaddr_addr("114.114.114.114")))
-
-#define LWIP_TCP        1
-#define LWIP_UDP        1
-//for mdns
-//#define MEMP_NUM_UDP_PCB                2
-//#define LWIP_NUM_NETIF_CLIENT_DATA      1
-
-#define LWIP_ARP                        1
-#define ARP_TABLE_SIZE                  4
-#define ARP_MAXAGE                      300
-#define LWIP_ETHERNET                   1
-
-//for mqtt
-#define LWIP_CALLBACK_API               1
-#define MEMP_NUM_SYS_TIMEOUT            10
-
-//#define ETHARP_SUPPORT_VLAN             1
-#define MEM_SIZE        (512)
-#define PBUF_POOL_SIZE  5
-#define PBUF_POOL_BUFSIZE 300
-#define TCP_MSS         (300 - 40)
-#define LWIP_ICMP               0
-#define LWIP_IGMP               0
-
-#define MEMP_NUM_TCP_PCB_LISTEN         4
-//#define MEMP_NUM_TCP_SEG                TCP_SBD_QUEUELEN
-
-//for mqtt ssl
-#define LWIP_ALTCP              1
-#define LWIP_ALTCP_TLS          1
-#define LWIP_ALTCP_TLS_MBEDTLS  1
-#define ALTCP_MBEDTLS_RNG_FN    mbedtls_entropy_func
-
-#define LWIP_DEBUG      1
-#define ETHARP_DEBUG    LWIP_DBG_OFF
-#define ICMP_DEBUG      LWIP_DBG_OFF
-#define IP_DEBUG        LWIP_DBG_OFF
-#define DNS_DEBUG       LWIP_DBG_OFF
-#define MQTT_DEBUG      LWIP_DBG_OFF
-#define TCP_DEBUG       LWIP_DBG_OFF
-#define TCP_INPUT_DEBUG LWIP_DBG_OFF
 
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
@@ -109,5 +44,68 @@
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+
+#define NO_SYS                        1
+#define LWIP_IPV4                       1
+#define LWIP_SOCKET                     0
+#define LWIP_NETCONN                    0
+#define NO_SYS_NO_TIMERS                1
+#define SYS_LIGHTWEIGHT_PROT            0
+#define LWIP_RAW        1
+//
+#define LWIP_TIMERS     1
+#define LWIP_DNS        1
+#define LWIP_DHCP       1       
+#define DNS_TABLE_SIZE  2
+#define DNS_MAX_NAME_LENGTH     32
+#define DNS_MAX_SERVERS 1
+#define LWIP_RAND       lwip_rand
+
+#define LWIP_TCP        1
+#define LWIP_UDP        1
+
+#define LWIP_ARP                        1
+#define ARP_TABLE_SIZE                  2
+#define LWIP_ETHERNET                   1
+
+//for mqtt
+#define LWIP_CALLBACK_API               1
+#define MEMP_NUM_SYS_TIMEOUT            10
+#define MQTT_OUTPUT_RINGBUF_SIZE        200
+#define MQTT_VAR_HEADER_BUFFER_LEN      200
+
+#define MEM_SIZE                        (2*1024)
+#define MEMP_NUM_TCP_PCB                4
+#define MEMP_NUM_TCP_PCB_LISTEN         2
+#define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
+#define PBUF_POOL_SIZE                  4
+#define LWIP_ICMP               0
+#define LWIP_IGMP               0
+
+//for mqtt ssl
+//#define LWIP_ALTCP              1
+//#define LWIP_ALTCP_TLS          1
+//#define LWIP_ALTCP_TLS_MBEDTLS  1
+//#define ALTCP_MBEDTLS_RNG_FN    mbedtls_entropy_func
+
+#define LWIP_DEBUG      0
+#define ETHARP_DEBUG    LWIP_DBG_OFF
+#define ICMP_DEBUG      LWIP_DBG_OFF
+#define IP_DEBUG        LWIP_DBG_OFF
+#define DNS_DEBUG       LWIP_DBG_OFF
+#define MQTT_DEBUG      LWIP_DBG_OFF
+#define TCP_DEBUG       LWIP_DBG_OFF
+#define UDP_DEBUG       LWIP_DBG_OFF   
+#define ACD_DEBUG       LWIP_DBG_OFF
+#define TCP_INPUT_DEBUG LWIP_DBG_OFF
+#define DHCP_DEBUG      LWIP_DBG_OFF
+
+#define LWIP_TCPIP_CORE_LOCKING         0
+#define MEMP_NUM_FRAG_PBUF              4
+#define MEMP_NUM_ARP_QUEUE              4
+#define MEMP_NUM_NETCONN                2
+#define MEMP_NUM_SELECT_CB              2
+#define MEMP_NUM_TCPIP_MSG_API          2
+#define MEMP_NUM_TCPIP_MSG_INPKT        2
 
 #endif /* LWIP_HDR_LWIPOPTS_H */

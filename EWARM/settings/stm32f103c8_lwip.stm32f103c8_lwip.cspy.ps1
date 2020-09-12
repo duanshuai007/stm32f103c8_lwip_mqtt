@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "C:\stm32\stm32project\stm32f103c8_lwip\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.general.xcl" --backend -f "C:\stm32\stm32project\stm32f103c8_lwip\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "C:\Users\duanshuai\Desktop\stm32f103c8_lwip_mqtt\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.general.xcl" --backend -f "C:\Users\duanshuai\Desktop\stm32f103c8_lwip_mqtt\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "C:\stm32\stm32project\stm32f103c8_lwip\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.general.xcl" --debug_file=$debugfile --backend -f "C:\stm32\stm32project\stm32f103c8_lwip\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "C:\Users\duanshuai\Desktop\stm32f103c8_lwip_mqtt\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\duanshuai\Desktop\stm32f103c8_lwip_mqtt\EWARM\settings\stm32f103c8_lwip.stm32f103c8_lwip.driver.xcl" 
 }

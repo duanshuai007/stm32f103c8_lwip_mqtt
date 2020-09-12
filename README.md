@@ -107,59 +107,13 @@ u32_t sys_now(void)
 #ifndef LWIP_HDR_LWIPOPTS_H
 #define LWIP_HDR_LWIPOPTS_H
 
-#define NO_SYS                        1
-#define LWIP_IPV4                       1
-#define LWIP_SOCKET                     0
-#define LWIP_NETCONN                    0
-//
-#define NO_SYS_NO_TIMERS                1
-//
-#define SYS_LIGHTWEIGHT_PROT            0
-//#define LWIP_DHCP     0
-//
-//#define MEM_LIBC_MALLOC                 0
-//#define MEM_OVERFLOW_CHECK              0
-//#define MEMP_OVERFLOW_CHECK             0
-//
-#define LWIP_RAW        1
-//#define PPP_SUPPORT     0
-//
-#define LWIP_TIMERS     1
-//#define LWIP_DNS        0
-//#define LWIP_IGMP       0
-#define LWIP_TCP        1
-#define LWIP_UDP        1
-#define LWIP_ARP        1
-#define ARP_MAXAGE                      300
-//#define LWIP_NUM_NETIF_CLIENT_DATA      0
-#define LWIP_ETHERNET   1
-
-//for mqtt
-#define LWIP_CALLBACK_API       1
-#define MEMP_NUM_SYS_TIMEOUT    18
-
-#define ETHARP_SUPPORT_VLAN 1
-
-#define MEM_SIZE        (5*1024)
-#define PBUF_POOL_SIZE  8
-#define PBUF_POOL_BUFSIZE 300
-#define TCP_MSS         (300 - 40)
-#define LWIP_ICMP               1
-//#define LWIP_BROADCAST_PING     1
-//#define IP_FORWARD              1
-//#define LWIP_IGMP               1
-
-#define LWIP_DEBUG      1
-#define ETHARP_DEBUG    LWIP_DBG_OFF
-#define ICMP_DEBUG      LWIP_DBG_OFF
-#define IP_DEBUG        LWIP_DBG_OFF
 
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 #define MEM_ALIGNMENT 4
 /*----- Default Value for MEMP_NUM_PBUF: 16 ---*/
 #define MEMP_NUM_PBUF 4
 /*----- Value in opt.h for LWIP_DNS_SECURE: (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT) -*/
-#define LWIP_DNS_SECURE 7
+#define LWIP_DNS_SECURE 1
 /*----- Value in opt.h for TCP_SND_QUEUELEN: (4*TCP_SND_BUF + (TCP_MSS - 1))/TCP_MSS -----*/
 //#define TCP_SND_QUEUELEN 9
 /*----- Value in opt.h for TCP_SNDLOWAT: LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF) - 1) -*/
@@ -196,6 +150,69 @@ u32_t sys_now(void)
 #define CHECKSUM_CHECK_ICMP 0
 /*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
 #define CHECKSUM_CHECK_ICMP6 0
+
+#define NO_SYS                        1
+#define LWIP_IPV4                       1
+#define LWIP_SOCKET                     0
+#define LWIP_NETCONN                    0
+#define NO_SYS_NO_TIMERS                1
+#define SYS_LIGHTWEIGHT_PROT            0
+#define LWIP_RAW        1
+//
+#define LWIP_TIMERS     1
+#define LWIP_DNS        1
+#define LWIP_DHCP       1       
+#define DNS_TABLE_SIZE  2
+#define DNS_MAX_NAME_LENGTH     32
+#define DNS_MAX_SERVERS 1
+#define LWIP_RAND       lwip_rand
+
+#define LWIP_TCP        1
+#define LWIP_UDP        1
+
+#define LWIP_ARP                        1
+#define ARP_TABLE_SIZE                  2
+#define LWIP_ETHERNET                   1
+
+//for mqtt
+#define LWIP_CALLBACK_API               1
+#define MEMP_NUM_SYS_TIMEOUT            10
+#define MQTT_OUTPUT_RINGBUF_SIZE        200
+#define MQTT_VAR_HEADER_BUFFER_LEN      200
+
+#define MEM_SIZE                        (2*1024)
+#define MEMP_NUM_TCP_PCB                4
+#define MEMP_NUM_TCP_PCB_LISTEN         2
+#define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
+#define PBUF_POOL_SIZE                  4
+#define LWIP_ICMP               0
+#define LWIP_IGMP               0
+
+//for mqtt ssl
+//#define LWIP_ALTCP              1
+//#define LWIP_ALTCP_TLS          1
+//#define LWIP_ALTCP_TLS_MBEDTLS  1
+//#define ALTCP_MBEDTLS_RNG_FN    mbedtls_entropy_func
+
+#define LWIP_DEBUG      0
+#define ETHARP_DEBUG    LWIP_DBG_OFF
+#define ICMP_DEBUG      LWIP_DBG_OFF
+#define IP_DEBUG        LWIP_DBG_OFF
+#define DNS_DEBUG       LWIP_DBG_OFF
+#define MQTT_DEBUG      LWIP_DBG_OFF
+#define TCP_DEBUG       LWIP_DBG_OFF
+#define UDP_DEBUG       LWIP_DBG_OFF   
+#define ACD_DEBUG       LWIP_DBG_OFF
+#define TCP_INPUT_DEBUG LWIP_DBG_OFF
+#define DHCP_DEBUG      LWIP_DBG_OFF
+
+#define LWIP_TCPIP_CORE_LOCKING         0
+#define MEMP_NUM_FRAG_PBUF              4
+#define MEMP_NUM_ARP_QUEUE              4
+#define MEMP_NUM_NETCONN                2
+#define MEMP_NUM_SELECT_CB              2
+#define MEMP_NUM_TCPIP_MSG_API          2
+#define MEMP_NUM_TCPIP_MSG_INPKT        2
 
 #endif /* LWIP_HDR_LWIPOPTS_H */
 ```
@@ -365,4 +382,85 @@ void SysTick_Handler(void)
 
 lwip的源码中`src/apps/mqtt/mqtt.c`文件提供了对mqtt功能的实现，我们将该文件放到我们的工程目录下，然后将`src/include/lwip/apps/mqtt.h mqtt_priv.h mqtt_opts.h`三个文件也放到工程目录下，然后修改`mqtt_opts.h`文件，因为stm32f103c8t6的内存真是太有限了，所以将里面的各种buffer，len什么的都改小一点，这就要求我们发送的mqtt命令一定不能超出这个界限，否则就处理不了了。
 
-然后实现mqtt客户端的代码`mqtt_client.c`文件，就是一个简单的实现，需要注意，开发板publish的消息一定不能是qos=2的，这会导致内存不够用。所以无论什么消息，都用qos=0来进行发送。
+然后实现mqtt客户端的代码`mqtt_client.c`文件，就是一个简单的实现.
+
+* 需要注意，开发板publish的消息一定不能是qos=2的，这会导致内存不够用。所以无论什么消息，都用qos=0来进行发送。
+
+
+## DHCP:
+
+使能`#define LWIP_DHCP 1`
+
+因为我的lwip版本是1.4，所以需要自己把定时任务加入到住循环中定期执行。
+首先加入
+在`Lwip_Init()`中加入`dhcp_start(&netif)`
+
+然后在主循环中加入:
+
+```
+
+  if (localtime - DHCP_60S_Timer >= 60000) {
+    DHCP_60S_Timer = localtime;
+    dhcp_coarse_tmr();
+  }
+  if (localtime - DHCP_500MS_Timer >= 500) {
+    DHCP_500MS_Timer = localtime;
+    dhcp_fine_tmr();
+  }
+```
+
+  因为opt.h文件中默认使能了LWIP_DHCP_DOES_ACD_CHECK,查看源码发现在acd.c中也有一个定时任务acd_tmr(),我们把该任务也加入到主循环中。
+  这样就能够获取到动态IP了。
+
+
+## DNS:
+
+使能`#define LWIP_DNS 	1`
+
+在`Lwip_Init()`中加入
+
+```
+dns_init();
+IP4_ADDR(&dns0server, 114,114,114,114);
+dns_setserver(0, &dns0server);
+```
+
+然后在主循环中加入
+
+```
+
+
+static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
+{
+  LWIP_UNUSED_ARG(arg);
+  printf("%s: %s\r\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
+  is_get_ipaddr_is_ok = 1;
+  mqtt_server_ip.addr = addr->addr;
+}
+
+static void dns_dorequest(void)
+{
+  ip_addr_t dnsresp;
+  if (dns_gethostbyname(MQTT_SERVER_NAME, &dnsresp, dns_found, 0) == ERR_OK) {
+    dns_found(MQTT_SERVER_NAME, &dnsresp, 0); 
+  }
+}
+```
+
+在主循环中加入dns_tmr()
+
+```
+if (localtime - DNSTimer >= DNS_TMR_INTERVAL) {
+	DNSTimer = localtime;
+	dns_tmr();
+}
+```
+
+
+
+
+
+
+
+
+

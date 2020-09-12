@@ -2,7 +2,7 @@
 
 "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\bin\armjlink2.dll" 
 
-"C:\stm32\stm32project\stm32f103c8_lwip\EWARM\stm32f103c8_lwip\Exe\stm32f103c8_lwip.out" 
+"C:\Users\duanshuai\Desktop\stm32f103c8_lwip_mqtt\EWARM\stm32f103c8_lwip\Exe\stm32f103c8_lwip.out" 
 
 --plugin="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\bin\armbat.dll" 
 

@@ -24,10 +24,11 @@ __IO uint32_t ARPTimer = 0;
 #include "mqtt_client.h"
 #endif
 
-#if DNS_ENABLE
+#if LWIP_DNS
 #include "dns.h"
-#define DNS_NAME      "mqtt.iotwonderful.cn"
+#define MQTT_SERVER_NAME      "mqtt.iotwonderful.cn"
 
+ip_addr_t dns0server;
 ip_addr_t mqtt_server_ip;
 
 static uint8_t is_get_ipaddr_is_ok = 0;
@@ -44,8 +45,8 @@ static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
 static void dns_dorequest(void)
 {
   ip_addr_t dnsresp;
-  if (dns_gethostbyname(DNS_NAME, &dnsresp, dns_found, 0) == ERR_OK) {
-    dns_found(DNS_NAME, &dnsresp, 0); 
+  if (dns_gethostbyname(MQTT_SERVER_NAME, &dnsresp, dns_found, 0) == ERR_OK) {
+    dns_found(MQTT_SERVER_NAME, &dnsresp, 0); 
   }
 }
 
@@ -76,6 +77,13 @@ __IO uint32_t MQTTTimer = 0;
 static uint8_t mqtt_start = 0;
 #endif
 
+#if LWIP_DHCP
+#include "dhcp.h"
+__IO uint32_t DHCP_500MS_Timer = 0;
+__IO uint32_t DHCP_60S_Timer = 0;
+__IO uint32_t ACDTimer = 0;
+#endif
+
 extern err_t ethernetif_init(struct netif *netif);
 extern err_t ethernetif_input(struct netif *netif);
 void LwIP_Init(void)
@@ -90,10 +98,15 @@ void LwIP_Init(void)
   /* Initializes the memory pools defined by MEMP_NUM_x.*/
   memp_init();
 
+#if LWIP_DHCP
+  IP4_ADDR(&ipaddr, 0, 0, 0, 0);
+  IP4_ADDR(&netmask, 0, 0, 0, 0);
+  IP4_ADDR(&gw, 0, 0, 0, 0);  
+#else
   IP4_ADDR(&ipaddr, LOCAL_IP_0, LOCAL_IP_1, LOCAL_IP_2, LOCAL_IP_3);
   IP4_ADDR(&netmask, NETMASK_0, NETMASK_1, NETMASK_2, NETMASK_3);
   IP4_ADDR(&gw, GATEWAY_IP_0, GATEWAY_IP_1, GATEWAY_IP_2, GATEWAY_IP_3);
-  
+#endif
   /* - netif_add(struct netif *netif, struct ip_addr *ipaddr,
             struct ip_addr *netmask, struct ip_addr *gw,
             void *state, err_t (* init)(struct netif *netif),
@@ -118,19 +131,39 @@ void LwIP_Init(void)
   ping_init(&pingip);
 #endif
   
-#if DNS_ENABLE
+#if LWIP_DNS
   dns_init();
-  dns_dorequest();
+  IP4_ADDR(&dns0server, 114,114,114,114);
+  dns_setserver(0, &dns0server);
+#endif
+  
+#if LWIP_DHCP
+   dhcp_start(&netif);
 #endif
 }
+
+uint8_t is_get_mqttserver_ip_start = 0;
+uint32_t getDNSTimeoutTimer = 0;
 
 void LwIP_Periodic_Handle(__IO uint32_t localtime)
 {
   ethernetif_input(&netif);
-  /* TCP periodic process every 250 ms */
+  //sys_check_timeouts();
+  
+  if (netif.ip_addr.addr) {
+    if (!mqtt_server_ip.addr) {
+      if (!is_get_mqttserver_ip_start) {
+        printf("got ip addr:%s\r\n",  ipaddr_ntoa(&netif.ip_addr) );
+        dns_dorequest();
+        is_get_mqttserver_ip_start = 1;
+      }
+    }
+  }
+  
+//  /* TCP periodic process every 250 ms */
   if (localtime - TCPTimer >= TCP_TMR_INTERVAL)
   {
-    TCPTimer =  localtime;
+    TCPTimer = localtime;
     tcp_tmr();
   }
   /* ARP periodic process every 5s */
@@ -139,65 +172,78 @@ void LwIP_Periodic_Handle(__IO uint32_t localtime)
     ARPTimer =  localtime;
     etharp_tmr();
   }
-#if PING_ENABLE
-  if (localtime - PINGTimer >= 10000) {
-      PINGTimer = localtime;
-      ping_send_now();
-  }
-#endif
-  
-#if DNS_ENABLE
-  if (localtime - DNSTimer >= 5000) {
+//#if PING_ENABLE
+//  if (localtime - PINGTimer >= 10000) {
+//      PINGTimer = localtime;
+//      ping_send_now();
+//  }
+//#endif`
+
+#if LWIP_DNS
+  if (localtime - DNSTimer >= DNS_TMR_INTERVAL) {
     DNSTimer = localtime;
-    if (!is_get_ipaddr_is_ok) {
-      dns_tmr();
-    }
+    dns_tmr();
   }
 #endif
   
-#if MQTT_ENABLE
-#if DNS_ENABLE
-  if (is_get_ipaddr_is_ok) {
-#endif //DNS_ENABLE
-    if (!mqtt_start) {
-#if DNS_ENABLE
-      mqtt_init(&mqtt_server_ip);
-#else
-      mqtt_init();
-#endif //DNS_ENABLE
-      mqtt_start = 1;
-    } else {
-      sys_check_timeouts();
-      switch(device.mqtt_cmd) {
-      case MQTT_CMD_TYPE_LED:
-        if (device.device_ctrl) {
-          do_mqtt_publish("resp:led:on");
-        } else {
-          do_mqtt_publish("resp:led:off");
-        } 
-        break;
-      case MQTT_CMD_TYPE_TEMP:
-        if (device.device_ctrl) {
-          do_mqtt_publish("resp:temp:on");
-        } else {
-          do_mqtt_publish("resp:temp:off");
-        }
-        break;
-      case MQTT_CMD_TYPE_WINDOW:
-        if (device.device_ctrl) {
-          do_mqtt_publish("resp:window:on");
-        } else {
-          do_mqtt_publish("resp:window:off");
-        }
-        break;
-      default:
-        break;
-      }
-      device.mqtt_cmd = 0;
-    }
-#if DNS_ENABLE
+#if LWIP_DHCP
+  if (localtime - DHCP_60S_Timer >= DHCP_COARSE_TIMER_MSECS) {
+    DHCP_60S_Timer = localtime;
+    dhcp_coarse_tmr();
   }
-#endif//DNS_ENABLE
-#endif//MQTT_ENABLE
-  
+  if (localtime - DHCP_500MS_Timer >= DHCP_FINE_TIMER_MSECS) {
+    DHCP_500MS_Timer = localtime;
+    dhcp_fine_tmr();
+  }
+  if (localtime - ACDTimer >= ACD_TMR_INTERVAL) {
+    ACDTimer = localtime;
+    acd_tmr();
+  }
+#endif
+
+#if MQTT_ENABLE
+    if (mqtt_server_ip.addr) {
+      if (!mqtt_start) {
+#if LWIP_DNS
+        IP4_ADDR(&mqtt_server_ip, 192, 168, 199, 211);
+        mqtt_init(&mqtt_server_ip);
+#else
+        mqtt_init();
+#endif //DNS_ENABLE
+        mqtt_start = 1;
+      } else {
+        sys_check_timeouts();
+        switch(device.mqtt_cmd) {
+        case MQTT_CMD_TYPE_LED:
+          if (device.device_ctrl) {
+            do_mqtt_publish("resp:led:on");
+          } else {
+            do_mqtt_publish("resp:led:off");
+          }
+          stats_display();
+          break;
+        case MQTT_CMD_TYPE_TEMP:
+          if (device.device_ctrl) {
+            do_mqtt_publish("resp:temp:on");
+          } else {
+            do_mqtt_publish("resp:temp:off");
+          }
+          stats_display();
+          break;
+        case MQTT_CMD_TYPE_WINDOW:
+          if (device.device_ctrl) {
+            do_mqtt_publish("resp:window:on");
+          } else {
+            do_mqtt_publish("resp:window:off");
+          }
+          stats_display();
+          
+          break;
+        default:
+          break;
+        }
+        device.mqtt_cmd = 0;
+      }
+    }
+#endif //MQTT_ENABLE
 }
