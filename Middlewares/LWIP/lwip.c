@@ -9,12 +9,13 @@
 #include "timeouts.h"
 
 #include "device.h"
+#include "mqtt_client.h"
 #include "my_config.h"
 
 extern dev_ctrl device;
 static struct netif netif;
-__IO uint32_t TCPTimer = 0;
-__IO uint32_t ARPTimer = 0;
+uint32_t TCPTimer = 0;
+uint32_t ARPTimer = 0;
 
 #if PING_ENABLE
 #include "ping.h"
@@ -26,27 +27,17 @@ __IO uint32_t ARPTimer = 0;
 
 #if LWIP_DNS
 #include "dns.h"
-#define MQTT_SERVER_NAME      "mqtt.iotwonderful.cn"
 
 ip_addr_t dns0server;
 ip_addr_t mqtt_server_ip;
-
-static uint8_t is_get_ipaddr_is_ok = 0;
-__IO uint32_t DNSTimer = 0;
+uint32_t DNSTimer = 0;
 
 static void dns_found(const char *name, const ip_addr_t *addr, void *arg)
 {
   LWIP_UNUSED_ARG(arg);
   printf("%s: %s\r\n", name, addr ? ipaddr_ntoa(addr) : "<not found>");
-  is_get_ipaddr_is_ok = 1;
-  mqtt_server_ip.addr = addr->addr;
-}
-
-static void dns_dorequest(void)
-{
-  ip_addr_t dnsresp;
-  if (dns_gethostbyname(MQTT_SERVER_NAME, &dnsresp, dns_found, 0) == ERR_OK) {
-    dns_found(MQTT_SERVER_NAME, &dnsresp, 0); 
+  if (addr->addr) {
+    mqtt_server_ip.addr = addr->addr;
   }
 }
 
@@ -69,7 +60,7 @@ uint32_t lwip_rand(void)
 
 #if PING_ENABLE
 ip_addr_t pingip;
-__IO uint32_t PINGTimer = 0;
+uint32_t PINGTimer = 0;
 #endif 
 
 #if MQTT_ENABLE
@@ -79,9 +70,9 @@ static uint8_t mqtt_start = 0;
 
 #if LWIP_DHCP
 #include "dhcp.h"
-__IO uint32_t DHCP_500MS_Timer = 0;
-__IO uint32_t DHCP_60S_Timer = 0;
-__IO uint32_t ACDTimer = 0;
+uint32_t DHCP_500MS_Timer = 0;
+uint32_t DHCP_60S_Timer = 0;
+uint32_t ACDTimer = 0;
 #endif
 
 extern err_t ethernetif_init(struct netif *netif);
@@ -154,7 +145,9 @@ void LwIP_Periodic_Handle(__IO uint32_t localtime)
     if (!mqtt_server_ip.addr) {
       if (!is_get_mqttserver_ip_start) {
         printf("got ip addr:%s\r\n",  ipaddr_ntoa(&netif.ip_addr) );
-        dns_dorequest();
+#if LWIP_DNS
+        dns_gethostbyname(MQTT_SERVER, &mqtt_server_ip, dns_found, 0);
+#endif
         is_get_mqttserver_ip_start = 1;
       }
     }
@@ -220,7 +213,6 @@ void LwIP_Periodic_Handle(__IO uint32_t localtime)
           } else {
             do_mqtt_publish("resp:led:off");
           }
-          stats_display();
           break;
         case MQTT_CMD_TYPE_TEMP:
           if (device.device_ctrl) {
@@ -228,7 +220,6 @@ void LwIP_Periodic_Handle(__IO uint32_t localtime)
           } else {
             do_mqtt_publish("resp:temp:off");
           }
-          stats_display();
           break;
         case MQTT_CMD_TYPE_WINDOW:
           if (device.device_ctrl) {
@@ -236,8 +227,6 @@ void LwIP_Periodic_Handle(__IO uint32_t localtime)
           } else {
             do_mqtt_publish("resp:window:off");
           }
-          stats_display();
-          
           break;
         default:
           break;

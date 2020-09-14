@@ -52,7 +52,7 @@
 #define NO_SYS_NO_TIMERS                1
 #define SYS_LIGHTWEIGHT_PROT            0
 #define LWIP_RAW        1
-//
+
 #define LWIP_TIMERS     1
 #define LWIP_DNS        1
 #define LWIP_DHCP       1       

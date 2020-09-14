@@ -31,16 +31,6 @@ static void do_connect(mqtt_client_t *client);
 //  }
 //}
 
-//static void __do_mqtt_publish(mqtt_client_t *client, char *payload)
-//{
-//  err_t err;
-////  err = mqtt_publish(client, "/stm32_topic", pub_payload, strlen(pub_payload), qos, retain, mqtt_pub_request_cb, arg);
-//  err = mqtt_publish(client, resp_topic, payload, strlen(payload), 0, 0, NULL, NULL);
-//  if(err != ERR_OK) {
-//    printf("Publish err: %d\r\n", err);
-//  }
-//}
-
 //static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
 //{
 //  printf("Incoming publish at topic %s with total length %u\r\n", topic, (unsigned int)tot_len);
@@ -121,7 +111,6 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
     mqtt_set_inpub_callback(client, NULL, mqtt_incoming_data_cb, arg);
     
     /* Subscribe to a topic named "subtopic" with QoS level 1, call mqtt_sub_request_cb with result */
-//    err = mqtt_subscribe(client, "/stm32_topic", 1, mqtt_sub_request_cb, arg);
     char ctrltopic[20];
     memset(ctrltopic, 0, sizeof(ctrltopic));
     snprintf(ctrltopic, 20, "/ctrl/%02x%02x%02x%02x%02x%02x",
@@ -141,7 +130,6 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
 #endif
   }
 }
-
 
 #if LWIP_DNS
 static void do_connect(mqtt_client_t *client, ip_addr_t *serverip)
